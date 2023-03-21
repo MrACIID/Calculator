@@ -1,6 +1,21 @@
 let firstNumber = 6
 let secondNumber = 6
 let operator = "/"
+let numbersStorage = []
+
+function display(numbers) {
+    let screen = document.querySelector(".screen")
+    numbersStorage.push(numbers)
+    screen.innerHTML = numbersStorage.join('')
+
+}
+
+function clearAll() {
+    document.querySelector(".screen").innerHTML = `cleared`
+    numbersStorage.splice(0, numbersStorage.length)
+    display()
+}
+
 
 function add() {
     let addResult = firstNumber + secondNumber
@@ -40,4 +55,3 @@ function operate() {
         return divide()
     }
 }
-console.log(operate())
