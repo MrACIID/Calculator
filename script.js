@@ -4,7 +4,7 @@ let buttonOperator = document.querySelectorAll(".btn-op")
 let buttonEqual = document.querySelector(".btn-eq")
 let buttonClear = document.querySelector(".btn-clear")
 let buttonDelete = document.querySelector(".btn-delete")
-
+let currentResult = document.querySelector(".currentresult")
 let screen = document.querySelector(".screen")
 let screenPreviousvalue = document.querySelector(".previous")
 
@@ -12,72 +12,132 @@ let screenPreviousvalue = document.querySelector(".previous")
 let firstNumber = '';
 let secondNumber = '';
 
-//to be able to store the operator value.
-let operator = '';
+let result = null;
+let lastOperation = '';
+let haveDot = false;
 
-//listening on clicks for each numbers buttons and call for display() to display them.
-buttonNumbers.forEach((number) => number.addEventListener("click", function (e) {
-    display(e.target.textContent)
-    screen.textContent = firstNumber
+buttonNumbers.forEach(number => {
+    number.addEventListener('click', (e) => {
+        if (e.target.innerText === "." && !haveDot) {
+            haveDot = true;
 
-}))
+        } else if (e.target.innerText === "." && haveDot) {
+            return;
+        }
+        firstNumber += e.target.innerText;
+        screen.innerText = firstNumber;
+    })
+})
 
-//listening on clicks for each operator buttons. 
-buttonOperator.forEach((op) => op.addEventListener("click", function (e) {
 
-    //call handleOperator() to store the clicked operator into our variable and also seperate the firstNumber to the secondNumber to store both values
-    handleOperator(e.target.textContent)
-    //setting up the according value on the screen.
-    screenPreviousvalue.textContent = secondNumber + " " + operator;
-    screen.textContent = firstNumber
-}))
+buttonOperator.forEach(operator => {
+    operator.addEventListener('click', (e) => {
+        if (!firstNumber) result;
+        haveDot = false;
+        const operatorName = e.target.innerText;
+        if (secondNumber && firstNumber && lastOperation) {
+            mathOperation();
+        } else {
+            result = parseFloat(firstNumber);
+        }
+        clearVar(operatorName);
+        lastOperation = operatorName;
+    })
+})
 
-//listening for click on the "AC" all clear button and reset values to empty.
-buttonClear.addEventListener("click", function () {
-    screen.textContent = '';
-    screenPreviousvalue.textContent = '';
+function clearVar(name = '') {
+    secondNumber += firstNumber + ' ' + name + ' ';
+    screenPreviousvalue.innerText = secondNumber;
+    screen.innerText = '';
+    firstNumber = '';
+    currentResult.innerText = result;
+}
+
+function mathOperation() {
+    if (lastOperation === '*') {
+        result = parseFloat(result) * parseFloat(firstNumber);
+    } else if (lastOperation === '+') {
+        result = parseFloat(result) + parseFloat(firstNumber)
+    }
+    else if (lastOperation === '/') {
+        result = parseFloat(result) / parseFloat(firstNumber)
+    }
+    else if (lastOperation === '-') {
+        result = parseFloat(result) - parseFloat(firstNumber)
+    }
+}
+
+buttonEqual.addEventListener('click', (e) => {
+    if (!firstNumber || !secondNumber) return;
+    haveDot = false;
+    mathOperation();
+    clearVar();
+    screen.innerText = result;
+    currentResult.innerText = '';
+    firstNumber = result;
+    secondNumber = '';
+})
+
+buttonClear.addEventListener('click', (e) => {
+    screenPreviousvalue.innerText = "let's";
+    screen.innerText = 'calculate';
     secondNumber = '';
     firstNumber = '';
-    operator = '';
+    currentResult.innerText = '';
 })
 
-//listening for click on the equal button and calling operate() to launch the operation.
-buttonEqual.addEventListener("click", function () {
-    operate()
-})
-
-
-//display function lock values input to 6 individual number max !
-function display(num) {
-    if (firstNumber.length <= 6) {
-        firstNumber += num;
-    }
-}
-
-function handleOperator(op) {
-    console.log(Number(firstNumber))
-    //store the clicked operator into our variable and also seperate the firstNumber to the secondNumber to store both values
-    operator = op
-    secondNumber = firstNumber;
+buttonDelete.addEventListener('click', (e) => {
+    screen.innerText = '';
     firstNumber = '';
+})
+
+window.addEventListener('keydown', (e) => {
+    if (
+        e.key === '0' ||
+        e.key === '1' ||
+        e.key === '2' ||
+        e.key === '3' ||
+        e.key === '4' ||
+        e.key === '5' ||
+        e.key === '6' ||
+        e.key === '7' ||
+        e.key === '8' ||
+        e.key === '9' ||
+        e.key === '.'
+    ) {
+        clickOnNumbers(e.key);
+    } else if (
+        e.key === '*' ||
+        e.key === '/' ||
+        e.key === '+' ||
+        e.key === '-'
+    ) {
+        clickOnOperators(e.key);
+    }
+    else if (
+        e.key === 'Enter' || e.key === "="
+
+    ) {
+        clickOnEqual(e.key);
+    }
+})
+
+function clickOnNumbers(key) {
+    buttonNumbers.forEach(button => {
+        if (button.innerText === key) {
+            button.click()
+        }
+    })
 }
 
-function operate() {
-    //Convert those value to actual numbers to be able to calcul them.
-    secondNumber = Number(secondNumber)
-    firstNumber = Number(firstNumber)
-    if (operator === "+") {
-        secondNumber += firstNumber
-    }
-    else if (operator === "-") {
-        secondNumber -= firstNumber
-    }
-    else if (operator === "*") {
-        secondNumber *= firstNumber
-    }
-    else {
-        secondNumber /= firstNumber
-    }
-    screen.textContent = secondNumber
-    console.log(secondNumber)
+function clickOnOperators(key) {
+    buttonOperator.forEach(button => {
+        if (button.innerText === key) {
+            button.click()
+        }
+    })
+}
+
+function clickOnEqual(key) {
+    buttonEqual.click()
 }
