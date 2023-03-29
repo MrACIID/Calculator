@@ -94,6 +94,10 @@ body {
     background-color: rgba(153, 101, 155, 0.623);
 }
 
+.btn-op {
+    background-color: rgb(165, 231, 233);
+}
+
 .btn:active {
     transform: scale(0.9);
 }
